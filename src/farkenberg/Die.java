@@ -2,34 +2,52 @@ package farkenberg;
 
 import java.util.*;
 
+/**
+ * Die - represents a Die.
+ */
 public class Die {
 	private static Random rand = new Random();
 	
 	private boolean isKept;
 	private int sideUp;
 	private int numSides;
-
-	// constructor
+	
+	/**
+	 * Construct a new Die with the given number of sides
+	 * @param sides number of sides
+	 */
 	public Die(int sides) {
 		numSides = sides;
 	}
-
-	// rolls the die to a value between 0 and numSides, and adds 1
+	
+	/**
+	 * Roll the die.
+	 */
 	public void roll_die() {
 		sideUp = rand.nextInt(numSides) + 1;
 	}
-
-	// returns the value of sideUp
+	
+	/**
+	 * Get the side up of this die.
+	 * 
+	 * @return int
+	 */
 	public int get_sideUp() {
 		return sideUp;
 	}
-
-	// sets the value of isKept
+	
+	/**
+	 * Set the 'isKept' state
+	 * 
+	 * @param keep new state
+	 */
 	public void set_isKept(boolean keep) {
 		isKept = keep;
 	}
-
-	// gets the value of isKept
+	
+	/**
+	 * Get the 'isKept' state
+	 */
 	public boolean get_isKept() {
 		return isKept;
 	}

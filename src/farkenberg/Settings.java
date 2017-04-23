@@ -1,20 +1,29 @@
 package farkenberg;
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 
+/**
+ * Settings - holds game settings. Use {@link #read_file()} to read from the settings.
+ * Use <b><code>set_*</code></b> to make changes and {@link #write_file()} to save those changes.
+ */
 public class Settings {
 	private int num_sides;
 	private int num_dice;
 	private int num_turns;
 	private String filename;
-
-	// constructor
+	
 	public Settings() {
-		filename = "yahtzeeConfig.txt";
+		this.filename = "yahtzeeConfig.txt";
 	}
-
-	// reads the file
+	
+	/**
+	 * Loads configuration from the config file.
+	 */
 	public void read_file() {
 		try {
 			FileReader reader = new FileReader(filename);
@@ -28,64 +37,85 @@ public class Settings {
 			num_turns = Integer.parseInt(Turns_temp);
 
 			br.close();
-		}
-
-		catch (FileNotFoundException ex) {
+		} catch (FileNotFoundException ex) {
 			System.out.println("File not found");
-		}
-
-		catch (IOException ex) {
+		} catch (IOException ex) {
 			System.out.println("Error reading file");
 		}
 	}
-
-	// writes to the file
+	
+	/**
+	 * Writes the configuration file using the current settings
+	 */
 	public void write_file() {
-		Scanner input = new Scanner(System.in);
-		try {
-			FileWriter writer = new FileWriter(filename);
-			BufferedWriter bw = new BufferedWriter(writer);
-
-			System.out.println("Number of sides: ");
-			num_sides = input.nextInt();
-			String Sides_temp = Integer.toString(num_sides);
-			bw.write(Sides_temp);
+		try (BufferedWriter bw = new BufferedWriter(new FileWriter(filename))) {
+			bw.write(Integer.toString(num_sides));
 			bw.newLine();
-			System.out.println("Number of dice: ");
-			num_dice = input.nextInt();
-			String Dice_temp = Integer.toString(num_dice);
-			bw.write(Dice_temp);
+			
+			bw.write(Integer.toString(num_dice));
 			bw.newLine();
-			System.out.println("Number of rolls: ");
-			num_turns = input.nextInt();
-			String Turns_temp = Integer.toString(num_turns);
-			bw.write(Turns_temp);
+			
+			bw.write(Integer.toString(num_turns));
 			bw.newLine();
-			bw.close();
-		}
-
-		catch (FileNotFoundException ex) {
+		} catch (FileNotFoundException ex) {
 			System.out.println("File not found");
-		}
-
-		catch (IOException ex) {
+		} catch (IOException ex) {
 			System.out.println("Error reading file");
 		}
 	}
-
-	// returns the number of sides of each die
+	
+	/**
+	 * Returns config value for: number of sides on each die
+	 * @return num sides
+	 */
 	public int get_numSides() {
 		return num_sides;
 	}
-
-	// returns the number of dice in play
+	
+	/**
+	 * Changes config value for: number of sides on each die<br/>
+	 * Use write_file() to save changes.
+	 * 
+	 * @param num_sides new value
+	 */
+	public void set_numSides(int num_sides) {
+		this.num_sides = num_sides;
+	}
+	
+	/**
+	 * Returns config value for: number of dice in each hand
+	 * @return num dice
+	 */
 	public int get_numDice() {
 		return num_dice;
 	}
-
-	// returns the number of turns per round
+	
+	/**
+	 * Changes config value for: number of dice in each hand<br/>
+	 * Use write_file() to save changes.
+	 * 
+	 * @param num_dice new value
+	 */
+	public void set_numDice(int num_dice) {
+		this.num_dice = num_dice;
+	}
+	
+	/**
+	 * Returns config value for: number of turns (or rolls) per round
+	 * @return num turns
+	 */
 	public int get_numTurns() {
 		return num_turns;
+	}
+	
+	/**
+	 * Changes config value for: number of turns (or rolls) per round.<br/>
+	 * Use write_file() to save changes.
+	 * 
+	 * @param num_turns new value
+	 */
+	public void set_numTurns(int num_turns) {
+		this.num_turns = num_turns;
 	}
 
 }
