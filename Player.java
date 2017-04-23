@@ -3,13 +3,15 @@ public class Player {
 	//attributes
 	private Bank playerBank;
 	private String playerName;
+	private String fileName;
 
 	//constructor
-	public Player (String name)
+	public Player (String name_of_player, String name_of_file)
 	{
 
 		playerName = name;
 		playerBank = new Bank();
+		fileName = name_of_file;
 
 	}
 
@@ -33,6 +35,16 @@ public class Player {
 	public int get_playerBank()
 	{
 		return playerBank.get_bankedPoints();
+	}
+	
+	public void set_fileName(String name)
+	{
+		fileName = name;
+	}
+
+	public String get_fileName()
+	{
+		return fileName;
 	}
 
 }
