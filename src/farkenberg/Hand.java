@@ -78,14 +78,14 @@ public class Hand implements Iterable<Die> {
 				continue;
 			}
 			
-			if (prev.get_sideUp() == d.get_sideUp()) {
+			if (removeDuplicates && prev.get_sideUp() == d.get_sideUp()) {
 				continue;
 			} else {
 				ret.add(prev = d);
 			}
 		}
 		
-		return sorted;
+		return ret;
 	}
 	
 	/**
@@ -212,5 +212,10 @@ public class Hand implements Iterable<Die> {
 			}
 			
 		};
+	}
+	
+	@Override
+	public String toString() {
+		return hand.toString();
 	}
 }

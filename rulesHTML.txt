@@ -26,9 +26,9 @@ Any Die2: 100 points<br/>
 4, 4, 4: 400 points &nbsp;&nbsp;&nbsp;&nbsp; Seven of a kind: 3000 points<br/>
 5, 5, 5: 500 points &nbsp;&nbsp;&nbsp;&nbsp; Eight of kind:   3500 points<br/>
 6, 6, 6: 500 points &nbsp;&nbsp;&nbsp;&nbsp; Nine of a kind:  4000 points<br/>
-7, 7, 7: 600 points &nbsp;&nbsp;&nbsp;&nbsp; Straight of 4:   1000 points<br/>
-8, 8, 8: 600 points &nbsp;&nbsp;&nbsp;&nbsp; Straight of 5:   1500 points<br/>
-9, 9, 9: 700 points &nbsp;&nbsp;&nbsp;&nbsp; 
+7, 7, 7: 600 points &nbsp;&nbsp;&nbsp;&nbsp; Ten of a kind:   5000 points<br/>
+8, 8, 8: 600 points &nbsp;&nbsp;&nbsp;&nbsp; Straight of 4:   1000 points<br/>
+9, 9, 9: 700 points &nbsp;&nbsp;&nbsp;&nbsp; Straight of 5:   1500 points<br/>
 </p>
 <br/>
 <p><b>How to win:</b><br/>

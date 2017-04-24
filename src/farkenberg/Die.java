@@ -72,4 +72,9 @@ public class Die {
 	        return a.sideUp < b.sideUp ? -1 : a.sideUp == b.sideUp ? 0 : 1;
 	    }
 	}
+	
+	@Override
+	public String toString() {
+		return Integer.toString(sideUp);
+	}
 }

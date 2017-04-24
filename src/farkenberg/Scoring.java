@@ -69,9 +69,9 @@ public class Scoring {
 	
 	// returns the count of the die occurring most in the hand
 	public ArrayList<ScoringOption> getOptions_maxKind(Hand hand) {
-		HashMap<Integer,ScoringOption> optionMap = new HashMap<Integer,ScoringOption>();
+		HashMap<Integer,List<ScoringOption>> optionMap = new HashMap<>();
 		
-		for (int dieValue = 1; dieValue <= settings.get_property(Settings.PROPERTY_NUMSIDES); dieValue++) {
+		for (int dieValue = 1; dieValue <= settings.get_property(Settings.PROPERTY_NUMDICE); dieValue++) {
 			int count = 0;
 			
 			for (int i = 0; i < hand.size(); i++) {
@@ -83,36 +83,54 @@ public class Scoring {
 				}
 			}
 			
-			int score = 0;
-			switch (count) {
-			case 4:
-				score = 700;
-				break;
-			case 5:
-				score = 1000;
-				break;
-			case 6:
-				score = 2000;
-				break;
-			case 7:
-				score = 3000;
-				break;
-			case 8:
-				score = 3500;
-				break;
-			case 9:
-				score = 4000;
-				break;
-			case 10:
-				score = 5000;
-				break;
+			if (count < 4)
+				continue;
+			
+			if (!optionMap.containsKey(dieValue)) {
+				optionMap.put(dieValue, new ArrayList<ScoringOption>());
 			}
 			
-			optionMap.put(dieValue, new ScoringOption(score, "Score "+score+" for a "+count+" of a kind", hand));
+			int i = count;
+			do {
+				if (i == 3) break;
+				
+				int score = 0;
+				switch (i) {
+				case 4:
+					score = 700;
+					break;
+				case 5:
+					score = 1000;
+					break;
+				case 6:
+					score = 2000;
+					break;
+				case 7:
+					score = 3000;
+					break;
+				case 8:
+					score = 3500;
+					break;
+				case 9:
+					score = 4000;
+					break;
+				case 10:
+					score = 5000;
+					break;
+				}
+				optionMap.get(dieValue).add(new ScoringOption(score, "Score "+score+" for a "+i+" of a kind", hand));
+				
+				i--;
+			} while (i >= 4);
 		}
 		
+		ArrayList<ScoringOption> ret = new ArrayList<ScoringOption>();
 		
-		return new ArrayList<ScoringOption>(optionMap.values());
+		for (List<ScoringOption> r : optionMap.values()) {
+			ret.addAll(r);
+		}
+		
+		return ret;
 	}
 	
 	// returns the length of the longest straight found
@@ -181,7 +199,7 @@ public class Scoring {
 		optionList.add(getOption_die2(hand));
 
 		// --- possible scores for 3 of a kinds
-		for (int i = 0; i < hand.size(); i++) {
+		for (int i = 1; i <= settings.get_property(Settings.PROPERTY_NUMSIDES); i++) {
 			int score = 0;
 			
 			if (i == 1 || i == 2)
