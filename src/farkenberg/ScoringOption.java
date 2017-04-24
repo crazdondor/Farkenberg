@@ -17,9 +17,12 @@ public class ScoringOption extends JButton {
 
 	private boolean is_selected = false;
 
-	public ScoringOption(int points, String label) {
+	private Hand future;
+
+	public ScoringOption(int points, String label, Hand future_hand) {
 		this.points = points;
 		this.label = label;
+		this.future = future_hand.copy();
 		
     	setFocusPainted(false);
     	setRolloverEnabled(false);
@@ -40,6 +43,10 @@ public class ScoringOption extends JButton {
 			}
     		
     	});
+	}
+	
+	public Hand get_futureHand() {
+		return future;
 	}
 	
 	public boolean is_selected() {

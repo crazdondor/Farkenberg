@@ -6,9 +6,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
 /**
  * Settings - holds game settings. Use {@link #read_file()} to read from the settings.
@@ -31,9 +28,8 @@ public class Settings {
 	}
 	
 	public static String getRulesHTML() {
-		try {
+		try (BufferedReader br = new BufferedReader(new FileReader("rulesHTML.txt"))) {
 			String html = "";
-			BufferedReader br = new BufferedReader(new FileReader("rulesHTML.txt"));
 			String line;
 			while ((line = br.readLine()) != null) {
 				html += line;

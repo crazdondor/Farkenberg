@@ -23,6 +23,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
 
+import farkenberg.Die;
 import farkenberg.Game;
 import farkenberg.Hand;
 import farkenberg.Player;
@@ -37,9 +38,10 @@ public class GameScreen implements Screen {
 	ScoringOption chosen_option = null;
 	
 	// bank center
-	JPanel bankCenter;
+	JPanel bankOptionsPanel;
 	
 	// bank labels
+	JLabel turnScoreLabel;
 	JLabel bankScoreLabel;
 	JLabel totalScoreLabel;
 	
@@ -175,30 +177,90 @@ public class GameScreen implements Screen {
 			title.setFont(title.getFont().deriveFont(Font.BOLD, 28));
 			right.add(title, BorderLayout.NORTH);
 			
-			bankCenter = new JPanel();
+			
+			JPanel bankCenter = new JPanel();
 			bankCenter.setLayout(new BoxLayout(bankCenter, BoxLayout.Y_AXIS));
+			{
+				bankOptionsPanel = new JPanel();
+				bankOptionsPanel.setLayout(new BoxLayout(bankOptionsPanel, BoxLayout.Y_AXIS));
+				bankOptionsPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+				bankCenter.add(bankOptionsPanel);
+			}
 			right.add(bankCenter, BorderLayout.CENTER);
 			
-			JPanel bottom = new JPanel(new GridLayout(4, 1));
+			JPanel bottom = new JPanel(new GridLayout(6, 1));
 			bottom.setBorder(BorderFactory.createMatteBorder(2, 0, 0, 0, Color.BLACK));
+
 			bottom.add(createLabel("Bank Score:", 20));
-			bottom.add(bankScoreLabel = createLabel("0", 18));
+			bottom.add(turnScoreLabel = createLabel("0", 18));
+			
 			bottom.add(createLabel("Total Score:", 20));
+			bottom.add(bankScoreLabel = createLabel("0", 18));
+			
+			bottom.add(createLabel("Target Score:", 20));
 			bottom.add(totalScoreLabel = createLabel(NumberFormat.getNumberInstance(Locale.US).format(game.settings.get_property(Settings.PROPERTY_NUMWINPOINTS)), 18));
 			right.add(bottom, BorderLayout.SOUTH);
 		}
 		parent.add(right, BorderLayout.EAST);
 	}
+
+	public void clearAvailableOptions() {
+		rollButton.setText(ROLLBUTTONTEXT_OPTIONS_AVAILABLE);
+		bankOptionsPanel.removeAll();
+		bankOptionsPanel.revalidate();
+		bankOptionsPanel.repaint();
+	}
 	
-	public void setOptionsAvailable(boolean state) {
-		if (state) {
+	public void updateOptionsAvailable(List<ScoringOption> optionList) {
+		if (!optionList.isEmpty()) {
 			rollButton.setText(ROLLBUTTONTEXT_OPTIONS_AVAILABLE);
 		} else {
 			rollButton.setText(ROLLBUTTONTEXT_NO_OPTIONS_AVAILABLE);
 		}
-		bankCenter.removeAll();
-		bankCenter.revalidate();
-		bankCenter.repaint();
+		
+		bankOptionsPanel.removeAll();
+		
+		for (ScoringOption option : optionList) {
+			bankOptionsPanel.add(option);
+			
+			option.set_listener((selected) -> {
+				for (ScoringOption o2 : optionList) {
+					if (o2 != selected)
+						o2.set_selected(false);
+				}
+				
+				if (!selected.is_selected()) {
+					for (DieButton d : dice_list) {
+						d.set_selected(false);
+					}
+					chosen_option = null;
+					bankButton.setForeground(Color.LIGHT_GRAY);
+				} else {
+					int i = 0;
+					
+					for (Die d : selected.get_futureHand()) {
+						dice_list.get(i++).set_selected(!d.get_isKept());
+					}
+					
+					chosen_option = selected;
+					bankButton.setForeground(Color.BLACK);
+				}
+			});
+		}
+		
+		bankOptionsPanel.revalidate();
+		bankOptionsPanel.repaint();
+		
+		gameDicePanel.revalidate();
+		gameDicePanel.repaint();
+	}
+	
+	public void updateBankTurnInfo(int score) {
+		turnScoreLabel.setText(NumberFormat.getNumberInstance(Locale.US).format(score));
+	}
+	
+	public void clearBankTurnInfo() {
+		turnScoreLabel.setText("0");
 	}
 	
 	public void updateHand(Hand hand) {
@@ -210,7 +272,11 @@ public class GameScreen implements Screen {
 		
 		for (int i = 0; i < nums.length; i++) {
 			dice_list.get(i).set_numDots(nums[i]);
+			dice_list.get(i).set_selected(false);
 		}
+		
+		chosen_option = null;
+		bankButton.setForeground(Color.LIGHT_GRAY);
 		
 		gameDicePanel.revalidate();
 		gameDicePanel.repaint();
@@ -218,60 +284,16 @@ public class GameScreen implements Screen {
 
 	public void resetHand(int num_dice) {
 		dice_list.clear();
+		gameDicePanel.removeAll();
 		
 		for (int i = 0; i < num_dice; i++) {
-			DieButton die = new DieButton(0, (source_button) -> {
-				System.out.println("Selected Die -> " + source_button.get_numDots());
-				source_button.set_selected(!source_button.is_selected());
-				showOptionsForSelectedDice();
+			DieButton die = new DieButton(0, (source) -> {
 				return false;
 			});
 			
 			dice_list.add(die);
 			gameDicePanel.add(die);
 		}
-	}
-	
-	public void showOptionsForSelectedDice() {
-		chosen_option = null;
-		bankButton.setForeground(Color.LIGHT_GRAY);
-		
-		ArrayList<Integer> numsList = new ArrayList<>();
-		for (DieButton d : dice_list) {
-			if (d.is_selected()) {
-				numsList.add(d.get_numDots());
-			}
-		}
-		
-		int[] nums = new int[numsList.size()];
-		for (int i = 0; i < nums.length; i++) {
-			nums[i] = numsList.get(i);
-		}
-		
-		bankCenter.removeAll();
-		
-		List<ScoringOption> options = game.scoring.getNonZeroOptions(nums);
-		for (ScoringOption o : options) {
-			o.set_listener((option) -> {
-				for (ScoringOption o2 : options) {
-					if (o2 == option)
-						continue;
-					o2.set_selected(false);
-				}
-				
-				if (option.is_selected()) {
-					bankButton.setForeground(Color.BLACK);
-				} else {
-					bankButton.setForeground(Color.LIGHT_GRAY);
-				}
-				
-				chosen_option = option;
-			});
-			bankCenter.add(o);
-		}
-		
-		bankCenter.revalidate();
-		bankCenter.repaint();
 	}
 
 	// create a JLabel with the given text and font size

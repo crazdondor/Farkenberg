@@ -1,7 +1,8 @@
 package farkenberg;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 public class Scoring {
@@ -17,71 +18,149 @@ public class Scoring {
 	}
 
 	// returns the amount of die1 occurring in the hand
-	public int get_die1_count(int hand[]) {
+	public ScoringOption getOption_die1(Hand hand) {
 		int count = 0;
-		for (int i = 0; i < hand.length; i++) {
-			if (hand[i] == score_die1)
+		
+		for (Die d : hand) {
+			if (d.get_sideUp() == score_die1) {
+				d.set_isKept(false);
 				count++;
+			} else {
+				d.set_isKept(true);
+			}
 		}
-		return count;
+		
+		return new ScoringOption(count * 50, "Score " + (count * 50) + " for " + count + " " + score_die1 + "'s", hand);
 	}
 
 	// returns the amount of die1 occurring in the hand
-	public int get_die2_count(int hand[]) {
+	public ScoringOption getOption_die2(Hand hand) {
 		int count = 0;
-		for (int i = 0; i < hand.length; i++) {
-			if (hand[i] == score_die2)
+		
+		for (Die d : hand) {
+			if (d.get_sideUp() == score_die2) {
+				d.set_isKept(false);
 				count++;
+			} else {
+				d.set_isKept(true);
+			}
 		}
-		return count;
+		
+		return new ScoringOption(count * 100, "Score " + (count * 100) + " for " + count + " " + score_die2 + "'s", hand);
 	}
 
 	// determines if a 3 of a kind has been found for a specific number
-	public boolean threeKFound(int hand[], int num_to_find) {
+	public ScoringOption getOption_threeK(Hand hand, int num_to_find, int score) {
 		int count = 0;
 		
-		for (int i = 0; i < hand.length; i++) {
-			if (hand[i] == num_to_find)
+		for (Die d : hand) {
+			if (d.get_sideUp() == num_to_find) {
+				d.set_isKept(false);
 				count++;
+			} else {
+				d.set_isKept(true);
+			}
 		}
 		
-		return count >= 3;
+		score = count >= 3 ? score : 0;
+		
+		return new ScoringOption(score, "Score " + score + " for three of a kind with " + num_to_find + "'s", hand);
 	}
 	
 	// returns the count of the die occurring most in the hand
-	public int maxOfAKind(int hand[]) {
-		Arrays.sort(hand);
-		int maxCount = 0;
-		int currentCount;
+	public ArrayList<ScoringOption> getOptions_maxKind(Hand hand) {
+		HashMap<Integer,ScoringOption> optionMap = new HashMap<Integer,ScoringOption>();
+		
 		for (int dieValue = 1; dieValue <= settings.get_property(Settings.PROPERTY_NUMSIDES); dieValue++) {
-			currentCount = 0;
-			for (int i = 0; i < hand.length; i++) {
-				if (hand[i] == dieValue)
-					currentCount++;
+			int count = 0;
+			
+			for (int i = 0; i < hand.size(); i++) {
+				if (hand.get(i).get_sideUp() == dieValue) {
+					count++;
+					hand.get(i).set_isKept(false);
+				} else {
+					hand.get(i).set_isKept(true);
+				}
 			}
-			if (currentCount > maxCount)
-				maxCount = currentCount;
+			
+			int score = 0;
+			switch (count) {
+			case 4:
+				score = 700;
+				break;
+			case 5:
+				score = 1000;
+				break;
+			case 6:
+				score = 2000;
+				break;
+			case 7:
+				score = 3000;
+				break;
+			case 8:
+				score = 3500;
+				break;
+			case 9:
+				score = 4000;
+				break;
+			case 10:
+				score = 5000;
+				break;
+			}
+			
+			optionMap.put(dieValue, new ScoringOption(score, "Score "+score+" for a "+count+" of a kind", hand));
 		}
-		return maxCount;
+		
+		
+		return new ArrayList<ScoringOption>(optionMap.values());
 	}
 	
 	// returns the length of the longest straight found
-	public int maxStraightFound(int hand[]) {
-		Arrays.sort(hand);
-		int maxLength = 1;
-		int curLength = 1;
-		for (int counter = 0; counter < hand.length - 1; counter++) {
-			if (hand[counter] + 1 == hand[counter + 1]) // jump of 1
-				curLength += 1;
-			else if (hand[counter] + 1 < hand[counter + 1]) // jump of >=2
-				curLength = 1;
-			if (curLength > maxLength)
-				maxLength = curLength;
+	public ArrayList<ScoringOption> getOptions_maxStraight(Hand hand) {
+		ArrayList<ScoringOption> ret = new ArrayList<>();
+		ArrayList<Die> sortedReversed = hand.sorted(true); // true -> remove duplicates
+		Collections.reverse(sortedReversed);
+		
+		// Note: the result of hand.sorted() uses the same dice objects that are in hand
+		
+		for (int x = 4; x <= 5; x++) {
+			for (Die d : sortedReversed)
+				d.set_isKept(true);
+			ScoringOption opt = new ScoringOption(0, x == 4 ? "Score 0 for a small straight" : "Score 0 for a large straight", hand);
+			
+			if (sortedReversed.size() >= x) {
+				for (int i = 0; i <= (sortedReversed.size() - x); i++) {
+					for (Die d : sortedReversed)
+						d.set_isKept(true);
+					
+					int offset_max = sortedReversed.get(i).get_sideUp();
+					boolean fail = false;
+					
+					for (int j = 0; j < x; j++) {
+						if ((offset_max-j) != sortedReversed.get(i+j).get_sideUp()) {
+							fail = true;
+							break;
+						}
+						sortedReversed.get(i+j).set_isKept(false);
+					}
+					
+					if (!fail) {
+						opt = new ScoringOption(x == 4 ? 1000 : 1500, x == 4 ? "Score 1000 for a small straight" : "Score 1500 for a large straight", hand);
+						break;
+					}
+				}
+			}
+			
+			ret.add(opt);
 		}
-		return maxLength;
+		
+		return ret;
 	}
 	
-	public List<ScoringOption> getNonZeroOptions(int hand[]) {
+	// --------------------------------------------------------------------------------
+	
+	// get possible scoring options that are not 0
+	public List<ScoringOption> getNonZeroOptions(Hand hand) {
 		List<ScoringOption> optionList = new ArrayList<>();
 		
 		for (ScoringOption o : getOptions(hand)) {
@@ -93,75 +172,37 @@ public class Scoring {
 		return optionList;
 	}
 
-	// displays possible scores
-	public List<ScoringOption> getOptions(int hand[]) {
+	// get possible scoring options
+	public List<ScoringOption> getOptions(Hand hand) {
 		List<ScoringOption> optionList = new ArrayList<>();
 		
 		// --- possible scores for chosen die
-		int die1_count = get_die1_count(hand);
-		optionList.add(new ScoringOption(die1_count * 50, "Score " + (die1_count * 50) + " for " + score_die1));
-		int die2_count = get_die2_count(hand);
-		optionList.add(new ScoringOption(die2_count * 100, "Score " + (die2_count * 100) + " for " + score_die1));
+		optionList.add(getOption_die1(hand));
+		optionList.add(getOption_die2(hand));
 
 		// --- possible scores for 3 of a kinds
-		for (int i = 0; i < hand.length; i++) {
-			if (threeKFound(hand, i)) {
-				if (i == 1 || i == 2)
-					optionList.add(new ScoringOption(300, "Score " + 300 + " for three of a kind with " + i + "'s"));
-				else if (i == 3 || i == 4)
-					optionList.add(new ScoringOption(400, "Score " + 400 + " for three of a kind with " + i + "'s"));
-				else if (i == 5 || i == 6)
-					optionList.add(new ScoringOption(500, "Score " + 500 + " for three of a kind with " + i + "'s"));
-				else if (i == 7 || i == 8)
-					optionList.add(new ScoringOption(600, "Score " + 600 + " for three of a kind with " + i + "'s"));
-				else if (i == 9 || i == 10)
-					optionList.add(new ScoringOption(700, "Score " + 700 + " for three of a kind with " + i + "'s"));
-			} else {
-				optionList.add(new ScoringOption(0, "Score 0 for three of a kind with " + i + "'s"));
-			}
+		for (int i = 0; i < hand.size(); i++) {
+			int score = 0;
+			
+			if (i == 1 || i == 2)
+				score = 300;
+			else if (i == 3 || i == 4)
+				score = 400;
+			else if (i == 5 || i == 6)
+				score = 500;
+			else if (i == 7 || i == 8)
+				score = 600;
+			else if (i == 9 || i == 10)
+				score = 700;
+			
+			optionList.add(getOption_threeK(hand, i, score));
 		}
 
 		// --- possible scores for 4-10 of a kind
-		int maxOfAKind = maxOfAKind(hand);
-		if (maxOfAKind >= 4)
-			optionList.add(new ScoringOption(700, "Score 700 for a four of a kind"));
-		else
-			optionList.add(new ScoringOption(0, "Score 0 for a four of a kind"));
-		if (maxOfAKind >= 5)
-			optionList.add(new ScoringOption(1000, "Score 1000 for a five of a kind"));
-		else
-			optionList.add(new ScoringOption(0, "Score 0 for a five of a kind"));
-		if (maxOfAKind >= 6)
-			optionList.add(new ScoringOption(2000, "Score 2000 for a six of a kind"));
-		else
-			optionList.add(new ScoringOption(0, "Score 0 for a six of a kind"));
-		if (maxOfAKind >= 7)
-			optionList.add(new ScoringOption(3000, "Score 3000 for a seven of a kind"));
-		else
-			optionList.add(new ScoringOption(0, "Score 0 for a seven of a kind"));
-		if (maxOfAKind >= 8)
-			optionList.add(new ScoringOption(3500, "Score 3500 for a eight of a kind"));
-		else
-			optionList.add(new ScoringOption(0, "Score 0 for a eight of a kind"));
-		if (maxOfAKind >= 9)
-			optionList.add(new ScoringOption(4000, "Score 4000 for a nine of a kind"));
-		else
-			optionList.add(new ScoringOption(0, "Score 0 for a nine of a kind"));
-		if (maxOfAKind >= 10)
-			optionList.add(new ScoringOption(5000, "Score 5000 for a ten of a kind"));
-		else
-			optionList.add(new ScoringOption(0, "Score 0 for a ten of a kind"));
-
+		optionList.addAll(getOptions_maxKind(hand));
+		
 		// --- possible scores for a straight of 4 and a straight of 5
-		int maxStraightFound = maxStraightFound(hand);
-		if (maxStraightFound >= 4)
-			optionList.add(new ScoringOption(1000, "Score 1000 for a small straight"));
-		else
-			optionList.add(new ScoringOption(0, "Score 0 for a small straight"));
-		if (maxStraightFound >= 5)
-			optionList.add(new ScoringOption(1500, "Score 1500 for a large straight"));
-		else
-			optionList.add(new ScoringOption(0, "Score 0 for a large straight"));
+		optionList.addAll(getOptions_maxStraight(hand));
 		
 		return optionList;
 	}

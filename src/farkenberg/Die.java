@@ -8,8 +8,8 @@ import java.util.*;
 public class Die {
 	private static Random rand = new Random();
 	
-	private boolean isKept;
-	private int sideUp;
+	private boolean isKept = false;
+	private int sideUp = 0;
 	private int numSides;
 	
 	/**
@@ -17,7 +17,17 @@ public class Die {
 	 * @param sides number of sides
 	 */
 	public Die(int sides) {
-		numSides = sides;
+		this.numSides = sides;
+	}
+
+	/**
+	 * Construct a new Die with the given number of sides and specific sideUp
+	 * @param sides number of sides
+	 * @param sideUp side up
+	 */
+	public Die(int sides, int sideUp) {
+		this.numSides = sides;
+		this.sideUp = sideUp;
 	}
 	
 	/**
@@ -52,4 +62,14 @@ public class Die {
 		return isKept;
 	}
 
+	public int get_numSides() {
+		return numSides;
+	}
+
+	public static class DieComparator implements Comparator<Die> {
+	    @Override
+	    public int compare(Die a, Die b) {
+	        return a.sideUp < b.sideUp ? -1 : a.sideUp == b.sideUp ? 0 : 1;
+	    }
+	}
 }
