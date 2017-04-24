@@ -10,6 +10,7 @@ public class RunAllTests {
 		testClass(Test_Screens.class);
 		testClass(Test_Settings.class);
 		testClass(Test_Scoring.class);
+		testClass(Test_Misc.class);
 	}
 	
 	public static void testClass(Class<?> cls) {

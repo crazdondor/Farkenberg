@@ -17,8 +17,8 @@ public class Test_Settings {
 		s.write_file();
 		
 		Settings s2 = new Settings();
-		s.read_file();
-		assertTrue(s.get_property(Settings.PROPERTY_NUMDICE) == 6);
+		s2.read_file();
+		assertTrue(s2.get_property(Settings.PROPERTY_NUMDICE) == 6);
 		
 	}
 }
