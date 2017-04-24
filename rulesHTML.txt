@@ -1,0 +1,36 @@
+<p><b>How to start:</b> Enter the configurations to determine<br/>
+how many players (1-6), dice (5-10), sides (5-9), amount of<br/>
+points needed to win (7,000-20,000) you want to play with,<br/>
+and the 2 dice that you want to be worth points.</p>
+<br/>
+<p><b>Your turn:</b> An amount of dice per turn has already<br/>
+been determined. Roll all dice and set aside any dice that<br/>
+are worth points (see scoring). You MUST set aside all dice at<br/>
+the end of your turn to receive points. On each roll, set aside<br/>
+the dice worth points. If you are able to set aside all the dice,<br/>
+you bank those points and get all the dice back for a chance to<br/>
+bank more. However, if you get to a point where nothing can be<br/>
+set aside on you roll, it’s the next player’s turn. You only get<br/>
+to keep the points that you were able to bank by setting ALL dice<br/>
+aside. If you were not able to bank all dice, you get no points.</p>
+<br/>
+<p><b>Scoring:</b></br>
+Die1= First die determined to be worth points<br/>
+Die2= Second die determined to be worth points<br/>
+
+Any Die1: 50 points<br/>
+Any Die2: 100 points<br/>
+1, 1, 1: 300 points &nbsp;&nbsp;&nbsp;&nbsp; Four of a kind:  700  points<br/>
+2, 2, 2: 300 points &nbsp;&nbsp;&nbsp;&nbsp; Five of a kind:  1000 points<br/>
+3, 3, 3: 400 points &nbsp;&nbsp;&nbsp;&nbsp; Six of a kind:   200  points<br/>
+4, 4, 4: 400 points &nbsp;&nbsp;&nbsp;&nbsp; Seven of a kind: 3000 points<br/>
+5, 5, 5: 500 points &nbsp;&nbsp;&nbsp;&nbsp; Eight of kind:   3500 points<br/>
+6, 6, 6: 500 points &nbsp;&nbsp;&nbsp;&nbsp; Nine of a kind:  4000 points<br/>
+7, 7, 7: 600 points &nbsp;&nbsp;&nbsp;&nbsp; Straight of 4:   1000 points<br/>
+8, 8, 8: 600 points &nbsp;&nbsp;&nbsp;&nbsp; Straight of 5:   1500 points<br/>
+9, 9, 9: 700 points &nbsp;&nbsp;&nbsp;&nbsp; 
+</p>
+<br/>
+<p><b>How to win:</b><br/>
+The first player to bank the amount of points needed to win<br/>
+wins the game.</p>

@@ -3,6 +3,7 @@ package farkenberg;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 
 import javax.imageio.ImageIO;
 
@@ -14,7 +15,7 @@ public enum PlayerIcon {
 	BEAR("Bear", "bear.jpg"),
 	BUNNY("Bunny", "bunny.jpg"),
 	CAT("Cat", "cat.jpg"),
-	DOG("Dog", "dog.jpg"),
+	DOG("Dog", "dog1.jpg"),
 	ELEPHANT("Elephant", "elephant.jpg"),
 	FISH("Fish", "fish.jpg"),
 	FISH2("Fish2", "fish2.jpg"),
@@ -31,7 +32,9 @@ public enum PlayerIcon {
 	final String name;
 	final String file;
 	
-	final String icon_folder = "res/";
+	final String icon_folder = "res/"; // must have trailing slash
+	
+	private static HashMap<String, BufferedImage> imageCache = new HashMap<>();
 	
 	PlayerIcon(String name, String file) {
 		this.name = name;
@@ -60,12 +63,22 @@ public enum PlayerIcon {
 	 * @return icon image
 	 */
 	public BufferedImage getImageFor(PlayerIcon icon) {
-		File img = new File(icon_folder + icon.file);
+		String path = icon_folder + icon.file;
+		
+		if (imageCache.containsKey(path)) {
+			return imageCache.get(path);
+		}
+		
+		File img = new File(path);
 		
 		try {
 			BufferedImage image = ImageIO.read(img);
+			
+			imageCache.put(path, image);
+			
 			return image;
 		} catch (IOException e) {
+			System.out.print(path);
 			e.printStackTrace();
 		}
 		
